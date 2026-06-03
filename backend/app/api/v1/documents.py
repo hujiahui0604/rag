@@ -1,6 +1,7 @@
 """Document API endpoints"""
 from fastapi import APIRouter, Depends, UploadFile, File, Form, HTTPException, Query
 from typing import Optional, List
+from sqlalchemy.orm import Session
 
 from app.deps import DBSession, CurrentActiveUser
 from app.models.user import User

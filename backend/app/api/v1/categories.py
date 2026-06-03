@@ -1,6 +1,7 @@
 """Category API endpoints"""
 from fastapi import APIRouter, Depends, HTTPException
 from typing import List, Optional
+from sqlalchemy.orm import Session
 
 from app.deps import DBSession, CurrentActiveUser, AdminUser
 from app.models.user import User
