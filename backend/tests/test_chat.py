@@ -1,22 +1,36 @@
 """Chat API tests"""
+import os
 import pytest
+
+# Set test database before importing app
+os.environ["DATABASE_URL"] = "sqlite:///./data/test.db"
+
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
-from app.db.base import Base
-from app.main import app
-from app.deps import DBSession
 
-
-SQLALCHEMY_DATABASE_URL = "sqlite:///:memory:"
+SQLALCHEMY_DATABASE_URL = "sqlite:///./data/test.db"
 
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL,
     connect_args={"check_same_thread": False},
     poolclass=StaticPool,
 )
+
+# Import all models to register them with Base
+from app.models import user  # noqa: F401
+from app.models import document  # noqa: F401
+from app.models import category  # noqa: F401
+from app.models import chat  # noqa: F401
+from app.models import permission  # noqa: F401
+from app.models import config  # noqa: F401
+
+from app.db.base import Base
+from app.main import app
+from app.deps import DBSession
+
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 

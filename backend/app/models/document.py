@@ -18,7 +18,7 @@ class Document(Base):
     file_path = Column(String(500), nullable=False)
     file_hash = Column(String(64), nullable=True)
 
-    current_version_id = Column(Integer, ForeignKey("document_versions.id"), nullable=True)
+    current_version_id = Column(Integer, ForeignKey("document_versions.id", use_alter=True), nullable=True)
     category_id = Column(Integer, ForeignKey("categories.id"), nullable=True)
 
     status = Column(String(20), default="processing")
@@ -30,7 +30,12 @@ class Document(Base):
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
 
     # 关系
-    versions = relationship("DocumentVersion", back_populates="document", order_by="desc(DocumentVersion.version_number)")
+    versions = relationship(
+        "DocumentVersion",
+        back_populates="document",
+        order_by="desc(DocumentVersion.version_number)",
+        foreign_keys="DocumentVersion.document_id"
+    )
     category = relationship("Category", back_populates="documents")
     creator = relationship("User", back_populates="documents", foreign_keys=[created_by])
     permissions = relationship("DocumentPermission", back_populates="document")
@@ -51,4 +56,4 @@ class DocumentVersion(Base):
     created_at = Column(DateTime, server_default=func.now())
 
     # 关系
-    document = relationship("Document", back_populates="versions")
+    document = relationship("Document", back_populates="versions", foreign_keys=[document_id])

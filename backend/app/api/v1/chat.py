@@ -109,7 +109,6 @@ def send_message(
         token_count=len(response_content)
     )
     db.add(ai_message)
-    session.updated_at = None
     db.commit()
 
     return ChatResponse(

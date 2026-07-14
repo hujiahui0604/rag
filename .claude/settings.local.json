@@ -2,7 +2,26 @@
   "permissions": {
     "allow": [
       "Bash(ls -la ~)",
-      "Read(//c/Users/hspcadmin/**)"
+      "Read(//c/Users/hspcadmin/**)",
+      "Bash(git stash *)",
+      "Bash(git checkout *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "WebSearch",
+      "Bash(entire status *)",
+      "Bash(entire checkpoint *)",
+      "Bash(entire session *)",
+      "Bash(where entire *)",
+      "WebFetch(domain:docs.entire.io)",
+      "Bash(scoop bucket *)",
+      "Bash(scoop install *)",
+      "Bash(go version *)",
+      "Bash(unzip -l entire_windows_amd64.zip)",
+      "Bash(unzip -o entire_windows_amd64.zip \"entire.exe\")",
+      "Bash(mv entire.exe ~/bin/entire.exe)",
+      "Bash(cp entire.exe ~/bin/entire.exe)",
+      "Bash(mkdir -p ~/bin)"
     ]
   }
 }

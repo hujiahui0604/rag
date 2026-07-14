@@ -6,11 +6,12 @@ from datetime import datetime
 
 class UserBase(BaseModel):
     username: str
-    email: EmailStr
 
 
-class UserCreate(UserBase):
+class UserCreate(BaseModel):
+    username: str
     password: str
+    email: Optional[str] = None
 
 
 class UserUpdate(BaseModel):
@@ -20,8 +21,10 @@ class UserUpdate(BaseModel):
     is_active: Optional[bool] = None
 
 
-class UserInDB(UserBase):
+class UserInDB(BaseModel):
     id: int
+    username: str
+    email: Optional[str] = None
     role: str
     is_active: bool
     last_login: Optional[datetime] = None

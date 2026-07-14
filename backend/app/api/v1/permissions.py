@@ -23,7 +23,7 @@ class PermissionGrantRequest:
 def grant_permission(
     document_id: int,
     target_user_id: Optional[int] = None,
-    permission_level: str = Query("read", regex="^(read|write|admin)$"),
+    permission_level: str = Query("read", pattern="^(read|write|admin)$"),
     user: User = CurrentActiveUser,
     db: Session = DBSession
 ):

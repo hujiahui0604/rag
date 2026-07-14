@@ -3,7 +3,8 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
-from app.deps import DBSession
+from app.deps import DBSession, CurrentActiveUser
+from app.models.user import User
 from app.schemas.user import UserCreate, UserResponse
 from app.schemas.token import Token
 from app.services.auth_service import AuthService
@@ -27,4 +28,12 @@ def register(
 ):
     """Register a new user."""
     user = AuthService.create_user(db, user_data)
+    return user
+
+
+@router.get("/me", response_model=UserResponse)
+def get_current_user(
+    user: User = CurrentActiveUser
+):
+    """Get current authenticated user."""
     return user

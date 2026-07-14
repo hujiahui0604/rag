@@ -40,17 +40,18 @@ class AuthService:
                 detail="Username already exists",
             )
 
-        existing_email = db.query(User).filter(User.email == user_data.email).first()
-        if existing_email:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Email already registered",
-            )
+        if user_data.email:
+            existing_email = db.query(User).filter(User.email == user_data.email).first()
+            if existing_email:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Email already registered",
+                )
 
         hashed_password = get_password_hash(user_data.password)
         db_user = User(
             username=user_data.username,
-            email=user_data.email,
+            email=user_data.email or None,
             password_hash=hashed_password,
             role="user",
         )
