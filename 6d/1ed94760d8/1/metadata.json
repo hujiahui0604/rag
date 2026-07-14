@@ -1,0 +1,104 @@
+{
+  "cli_version": "0.8.42",
+  "checkpoint_id": "6d1ed94760d8",
+  "session_id": "983f5733-1c87-4f9e-81f2-1545825140f9",
+  "strategy": "manual-commit",
+  "created_at": "2026-07-14T06:16:45.7166474Z",
+  "branch": "fix/rag-defects",
+  "checkpoints_count": 1,
+  "save_step_count": 1,
+  "files_touched": [
+    "backend/app/config.py"
+  ],
+  "agent": "Claude Code",
+  "model": "MiniMax-M2.5",
+  "turn_id": "ec80568b0de8",
+  "compact_transcript_start": 0,
+  "token_usage": {
+    "input_tokens": 51272,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 2606896,
+    "output_tokens": 9416,
+    "api_call_count": 89
+  },
+  "skill_events_version": 1,
+  "skill_events": [
+    {
+      "id": "claude-skill-call_b29bf98f05ec4cf98e71e0a2",
+      "event_type": "tool_invocation",
+      "skill": {
+        "name": "requesting-code-review"
+      },
+      "source": {
+        "agent": "claude-code",
+        "signal": "skill_tool_use",
+        "confidence": "explicit"
+      },
+      "turn_id": "ec80568b0de8",
+      "transcript_anchor": {
+        "unit": "line",
+        "start": 52,
+        "end": 53,
+        "entry_ids": [
+          "01ae6ad3-8f2c-407f-9ade-6fb40b8c36b8"
+        ],
+        "tool_use_id": "call_b29bf98f05ec4cf98e71e0a2"
+      },
+      "native": {
+        "tool_name": "Skill",
+        "tool_use_id": "call_b29bf98f05ec4cf98e71e0a2"
+      },
+      "collapse": {
+        "target": "tool_pair",
+        "label": "Skill: requesting-code-review",
+        "default_collapsed": true
+      }
+    },
+    {
+      "id": "claude-skill-call_4a890afea07c4c209746f13e",
+      "event_type": "tool_invocation",
+      "skill": {
+        "name": "subagent-driven-development"
+      },
+      "source": {
+        "agent": "claude-code",
+        "signal": "skill_tool_use",
+        "confidence": "explicit"
+      },
+      "turn_id": "ec80568b0de8",
+      "transcript_anchor": {
+        "unit": "line",
+        "start": 77,
+        "end": 78,
+        "entry_ids": [
+          "357e0053-8b59-4377-a600-48b9322842ac"
+        ],
+        "tool_use_id": "call_4a890afea07c4c209746f13e"
+      },
+      "native": {
+        "tool_name": "Skill",
+        "tool_use_id": "call_4a890afea07c4c209746f13e"
+      },
+      "collapse": {
+        "target": "tool_pair",
+        "label": "Skill: subagent-driven-development",
+        "default_collapsed": true
+      }
+    }
+  ],
+  "session_metrics": {
+    "turn_count": 1
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-07-14T06:16:45.6265449Z",
+    "agent_lines": 0,
+    "agent_removed": 0,
+    "human_added": 1932963,
+    "human_modified": 48,
+    "human_removed": 0,
+    "total_committed": 1933011,
+    "total_lines_changed": 1933059,
+    "agent_percentage": 0,
+    "metric_version": 2
+  }
+}
