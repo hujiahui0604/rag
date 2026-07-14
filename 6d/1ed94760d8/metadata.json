@@ -1,0 +1,41 @@
+{
+  "cli_version": "0.8.42",
+  "checkpoint_id": "6d1ed94760d8",
+  "strategy": "manual-commit",
+  "branch": "fix/rag-defects",
+  "checkpoints_count": 3,
+  "files_touched": [
+    ".gitignore",
+    "README.md",
+    "backend/app/api/v1/__init__.py",
+    "backend/app/api/v1/auth.py",
+    "backend/app/api/v1/chat.py",
+    "backend/app/api/v1/permissions.py",
+    "backend/app/config.py",
+    "backend/app/core/security.py",
+    "backend/app/db/session.py",
+    "backend/app/models/document.py",
+    "backend/app/models/user.py",
+    "backend/app/schemas/user.py",
+    "backend/app/services/auth_service.py",
+    "backend/tests/test_auth.py",
+    "backend/tests/test_chat.py",
+    "backend/tests/test_documents.py"
+  ],
+  "sessions": [
+    {
+      "metadata": "/6d/1ed94760d8/0/metadata.json",
+      "transcript": "/6d/1ed94760d8/0/full.jsonl",
+      "compact_transcript": "/6d/1ed94760d8/0/transcript.jsonl",
+      "content_hash": "/6d/1ed94760d8/0/content_hash.txt",
+      "prompt": "/6d/1ed94760d8/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 11537,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 1426048,
+    "output_tokens": 3802,
+    "api_call_count": 57
+  }
+}
