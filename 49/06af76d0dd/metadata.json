@@ -1,0 +1,24 @@
+{
+  "cli_version": "0.8.42",
+  "checkpoint_id": "4906af76d0dd",
+  "strategy": "manual-commit",
+  "branch": "fix/rag-defects",
+  "checkpoints_count": 1,
+  "files_touched": null,
+  "sessions": [
+    {
+      "metadata": "/49/06af76d0dd/0/metadata.json",
+      "transcript": "/49/06af76d0dd/0/full.jsonl",
+      "compact_transcript": "/49/06af76d0dd/0/transcript.jsonl",
+      "content_hash": "/49/06af76d0dd/0/content_hash.txt",
+      "prompt": "/49/06af76d0dd/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 11409985,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 0,
+    "output_tokens": 56058,
+    "api_call_count": 114
+  }
+}
