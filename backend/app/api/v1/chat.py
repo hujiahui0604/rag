@@ -71,50 +71,21 @@ def send_message(
     user: User = CurrentActiveUser,
     db: Session = DBSession
 ):
-    """Send a message and get AI response."""
-    from app.config import settings
+    """Send a message and get a RAG-grounded AI response."""
+    from app.services.chat_service import ChatService
 
-    session = None
-    if data.session_id:
-        session = db.query(ChatSession).filter(
-            ChatSession.id == data.session_id,
-            ChatSession.user_id == user.id
-        ).first()
-        if not session:
-            raise HTTPException(status_code=404, detail="Session not found")
-    else:
-        session = ChatSession(
-            title=data.message[:50],
-            user_id=user.id
-        )
-        db.add(session)
-        db.commit()
-        db.refresh(session)
-
-    user_message = ChatMessage(
-        session_id=session.id,
-        role="user",
-        content=data.message,
-        token_count=len(data.message)
+    result = ChatService().send_message(
+        db,
+        user.id,
+        data.message,
+        session_id=data.session_id,
+        use_history=data.use_history
     )
-    db.add(user_message)
-    db.commit()
-
-    response_content = f"AI response to: {data.message}"
-
-    ai_message = ChatMessage(
-        session_id=session.id,
-        role="assistant",
-        content=response_content,
-        token_count=len(response_content)
-    )
-    db.add(ai_message)
-    db.commit()
 
     return ChatResponse(
-        message=response_content,
-        session_id=session.id,
-        token_count=ai_message.token_count
+        message=result["message"],
+        sources=result["sources"],
+        session_id=result["session_id"]
     )
 
 

@@ -49,7 +49,7 @@ class EmbeddingService:
             )
             response.raise_for_status()
             data = response.json()
-            embedding = data.get("embedding", [])
+            embedding = self._normalize(data.get("embedding", []))
 
             # 添加到缓存
             if use_cache and embedding:
@@ -122,11 +122,19 @@ class EmbeddingService:
                 )
                 response.raise_for_status()
                 data = response.json()
-                return data.get("embedding", [])
+                return self._normalize(data.get("embedding", []))
             except httpx.HTTPError as e:
                 raise ConnectionError(f"Failed to get embedding from Ollama: {e}")
             except Exception as e:
                 raise RuntimeError(f"Error generating embedding: {e}")
+
+    @staticmethod
+    def _normalize(vector: List[float]) -> List[float]:
+        """L2-normalize an embedding vector to unit length."""
+        norm = sum(v * v for v in vector) ** 0.5
+        if not norm:
+            return vector
+        return [v / norm for v in vector]
 
     def get_embedding_dimension(self) -> int:
         """Get the dimension of the embedding model."""

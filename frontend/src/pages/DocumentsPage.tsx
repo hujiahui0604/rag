@@ -8,6 +8,13 @@ import { Header } from '../components/Header';
 import { formatDate, formatFileSize } from '../lib/utils';
 import { Upload, FileText, Search, Trash2, Loader2 } from 'lucide-react';
 
+const STATUS_LABEL: Record<string, string> = {
+  pending: '待索引',
+  processing: '索引中',
+  completed: '已完成',
+  failed: '索引失败',
+};
+
 export function DocumentsPage() {
   const [documents, setDocuments] = useState<Document[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -63,11 +70,18 @@ export function DocumentsPage() {
       if (uploadDescription) formData.append('description', uploadDescription);
       if (uploadCategory) formData.append('category_id', String(uploadCategory));
 
-      await documentApi.create(formData);
+      const created = await documentApi.create(formData);
       setShowUpload(false);
       setUploadFile(null);
       setUploadTitle('');
       setUploadDescription('');
+
+      // 上传后自动索引到向量库，使其可被 RAG 检索
+      try {
+        await documentApi.index(created.data.id);
+      } catch (err) {
+        console.error('Index failed:', err);
+      }
       loadData();
     } catch (error) {
       console.error('Upload failed:', error);
@@ -75,6 +89,18 @@ export function DocumentsPage() {
       setUploading(false);
     }
   };
+
+  const handleReindex = async (id: number) => {
+  setLoading(true);
+  try {
+    await documentApi.index(id);
+    loadData();
+  } catch (error) {
+    console.error('Reindex failed:', error);
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleDelete = async (id: number) => {
     if (!confirm('确定要删除这个文档吗?')) return;
@@ -130,13 +156,24 @@ export function DocumentsPage() {
                       <FileText className="h-5 w-5 text-muted-foreground" />
                       <CardTitle className="text-base">{doc.title}</CardTitle>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleDelete(doc.id)}
-                    >
-                      <Trash2 className="h-4 w-4 text-red-500" />
-                    </Button>
+                    <div className="flex items-center gap-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleReindex(doc.id)}
+                        disabled={loading}
+                      >
+                        <Loader2 className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+                        索引
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleDelete(doc.id)}
+                      >
+                        <Trash2 className="h-4 w-4 text-red-500" />
+                      </Button>
+                    </div>
                   </div>
                   <CardDescription>{doc.description || '无描述'}</CardDescription>
                 </CardHeader>
@@ -144,7 +181,7 @@ export function DocumentsPage() {
                   <div className="text-sm text-muted-foreground space-y-1">
                     <p>类型: {doc.file_type}</p>
                     <p>大小: {formatFileSize(doc.file_size)}</p>
-                    <p>状态: {doc.status}</p>
+                    <p>状态: {STATUS_LABEL[doc.status] || doc.status}</p>
                     <p>块数: {doc.chunk_count}</p>
                     <p>上传时间: {formatDate(doc.created_at)}</p>
                   </div>

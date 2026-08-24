@@ -127,6 +127,35 @@ async def create_document(
     return DocumentResponse.model_validate(document)
 
 
+@router.post("/{document_id}/index", response_model=DocumentResponse)
+def index_document(
+    document_id: int,
+    user: User = CurrentActiveUser,
+    db: Session = DBSession
+):
+    """索引文档到向量库，使其可被 RAG 检索（状态置为 completed）。"""
+    from app.models.document import Document
+    from app.services.chat_service import ChatService
+    from app.constants import DOC_STATUS_FAILED
+
+    document = db.query(Document).filter(Document.id == document_id).first()
+    if not document:
+        raise HTTPException(status_code=404, detail="Document not found")
+
+    if user.role != "admin" and document.created_by != user.id:
+        raise HTTPException(status_code=403, detail="Access denied")
+
+    try:
+        ChatService().index_document(db, document_id, user.id)
+    except Exception as e:
+        document.status = DOC_STATUS_FAILED
+        document.error_message = str(e)[:500]
+        db.commit()
+        raise HTTPException(status_code=500, detail=f"Indexing failed: {e}")
+
+    return DocumentResponse.model_validate(document)
+
+
 @router.get("/{document_id}", response_model=DocumentResponse)
 def get_document(
     document_id: int,

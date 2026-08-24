@@ -1,9 +1,20 @@
 """FastAPI Main Application"""
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.v1 import api_router
 from app.config import settings
+from app.db.session import init_db
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Ensure database tables exist on startup."""
+    init_db()
+    yield
+
 
 app = FastAPI(
     title="Enterprise RAG",
@@ -11,6 +22,7 @@ app = FastAPI(
     description="企业内部知识库 AI 问答系统",
     docs_url="/docs",
     redoc_url="/redoc",
+    lifespan=lifespan,
 )
 
 app.add_middleware(

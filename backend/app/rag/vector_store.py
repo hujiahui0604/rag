@@ -53,7 +53,7 @@ class VectorStore:
             if cache_key not in VectorStore._collections:
                 VectorStore._collections[cache_key] = self.client.get_or_create_collection(
                     name=self.collection_name,
-                    metadata={"description": "Document embeddings for RAG"}
+                    metadata={"description": "Document embeddings for RAG", "hnsw:space": "cosine"}
                 )
             self._collection = VectorStore._collections[cache_key]
         return self._collection
@@ -159,7 +159,8 @@ class VectorStore:
     def reset(self) -> None:
         """Reset the collection (delete all data)."""
         self.client.delete_collection(self.collection_name)
-        self.collection = None
+        self._collection = None
+        VectorStore._collections.pop(self.collection_name, None)
 
     def count(self) -> int:
         """Get the number of chunks in the collection."""

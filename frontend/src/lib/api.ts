@@ -143,6 +143,7 @@ export const documentApi = {
     }),
   update: (id: number, data: { title?: string; description?: string; category_id?: number }) =>
     api.put<Document>(`/documents/${id}`, data),
+  index: (id: number) => api.post<Document>(`/documents/${id}/index`),
   delete: (id: number) => api.delete(`/documents/${id}`),
 };
 
