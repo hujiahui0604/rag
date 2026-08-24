@@ -1,0 +1,10 @@
+<ide_opened_file>The user opened the file e:\RAG\.worktrees\feat\data-models\frontend\tsconfig.json in the IDE. This may or may not be related to the current task.</ide_opened_file>
+欧克
+
+---
+
+合并到 main 或创建 PR是什么意思
+
+---
+
+全面检查一下这个项目，看看是否存在代码缺陷，如果有同步修改，我现在要跑通项目，让项目能运行起来
