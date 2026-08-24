@@ -1,0 +1,31 @@
+{
+  "cli_version": "0.8.42",
+  "checkpoint_id": "8cd07514ea6c",
+  "strategy": "manual-commit",
+  "branch": "fix/rag-defects",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "backend/app/config.py",
+    "backend/app/rag/embedding.py",
+    "backend/app/rag/llm.py",
+    "backend/app/rag/rag_service.py",
+    "backend/app/rag/vector_store.py",
+    "tests/test_rag_performance.py"
+  ],
+  "sessions": [
+    {
+      "metadata": "/8c/d07514ea6c/0/metadata.json",
+      "transcript": "/8c/d07514ea6c/0/full.jsonl",
+      "compact_transcript": "/8c/d07514ea6c/0/transcript.jsonl",
+      "content_hash": "/8c/d07514ea6c/0/content_hash.txt",
+      "prompt": "/8c/d07514ea6c/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 245593,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 0,
+    "output_tokens": 3330,
+    "api_call_count": 7
+  }
+}
