@@ -14,7 +14,11 @@ class LLMService:
         self.model = settings.OLLAMA_MODEL
         self.max_tokens = settings.MAX_TOKENS
         self.temperature = settings.TEMPERATURE
-        self.client = httpx.Client(timeout=120.0)
+        # 使用连接池，复用 TCP 连接
+        self.client = httpx.Client(
+            timeout=120.0,
+            limits=httpx.Limits(max_connections=20, max_keepalive_connections=10)
+        )
 
     def generate(
         self,

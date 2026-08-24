@@ -33,8 +33,8 @@ class Settings(BaseSettings):
     TEMPERATURE: float = 0.7
 
     # Document processing
-    CHUNK_SIZE: int = 1000
-    CHUNK_OVERLAP: int = 200
+    CHUNK_SIZE: int = 1500  # 优化：从 1000 增加到 1500，减少 chunk 碎片
+    CHUNK_OVERLAP: int = 300  # 优化：从 200 增加到 300，保证上下文连贯
 
     # CORS
     CORS_ORIGINS: list = ["http://localhost:5173", "http://localhost:3000", "http://localhost:3001", "http://localhost:3002"]

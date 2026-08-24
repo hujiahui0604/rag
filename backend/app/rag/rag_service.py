@@ -118,17 +118,12 @@ class RAGService:
                 query=query
             )
 
-        all_results = []
-        for doc_id in search_docs:
-            results = self.vector_store.search(
-                query_embedding,
-                document_id=doc_id,
-                top_k=top_k
-            )
-            all_results.extend(results)
-
-        all_results.sort(key=lambda x: x.score, reverse=True)
-        top_results = all_results[:top_k]
+        # 优化：一次查询所有文档，服务器端过滤
+        top_results = self.vector_store.search(
+            query_embedding,
+            document_ids=search_docs,
+            top_k=top_k
+        )
 
         if not top_results:
             return RAGResponse(
@@ -215,8 +210,10 @@ Be accurate and cite the sources when possible. If you cannot find the answer in
 
     def get_index_stats(self) -> Dict[str, Any]:
         """Get statistics about the vector store."""
+        cache_stats = EmbeddingService.get_cache_stats() if self.embedding_service else {}
         return {
             "total_chunks": self.vector_store.count(),
             "embedding_model": settings.EMBEDDING_MODEL,
-            "llm_model": settings.OLLAMA_MODEL if self.llm_service else None
+            "llm_model": settings.OLLAMA_MODEL if self.llm_service else None,
+            "query_cache": cache_stats
         }

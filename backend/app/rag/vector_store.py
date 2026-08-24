@@ -23,30 +23,40 @@ class SearchResult:
 class VectorStore:
     """ChromaDB vector store for document embeddings"""
 
+    # 类级别缓存，多个实例共享
+    _clients: Dict[str, chromadb.PersistentClient] = {}
+    _collections: Dict[str, chromadb.Collection] = {}
+
     def __init__(self, collection_name: str = "documents"):
         self.collection_name = collection_name
         self.client = self._get_client()
-        self.collection = None
+        self._collection = None
 
     def _get_client(self) -> chromadb.PersistentClient:
-        """Get or create ChromaDB client."""
-        os.makedirs(settings.CHROMA_PERSIST_DIR, exist_ok=True)
-        return chromadb.PersistentClient(
-            path=settings.CHROMA_PERSIST_DIR,
-            settings=ChromaSettings(
-                anonymized_telemetry=False,
-                allow_reset=True
+        """Get or create ChromaDB client (with caching)."""
+        cache_key = f"{settings.CHROMA_PERSIST_DIR}:{self.collection_name}"
+        if cache_key not in VectorStore._clients:
+            os.makedirs(settings.CHROMA_PERSIST_DIR, exist_ok=True)
+            VectorStore._clients[cache_key] = chromadb.PersistentClient(
+                path=settings.CHROMA_PERSIST_DIR,
+                settings=ChromaSettings(
+                    anonymized_telemetry=False,
+                    allow_reset=True
+                )
             )
-        )
+        return VectorStore._clients[cache_key]
 
     def get_or_create_collection(self) -> chromadb.Collection:
-        """Get or create the collection."""
-        if self.collection is None:
-            self.collection = self.client.get_or_create_collection(
-                name=self.collection_name,
-                metadata={"description": "Document embeddings for RAG"}
-            )
-        return self.collection
+        """Get or create the collection (cached)."""
+        if self._collection is None:
+            cache_key = f"{self.collection_name}"
+            if cache_key not in VectorStore._collections:
+                VectorStore._collections[cache_key] = self.client.get_or_create_collection(
+                    name=self.collection_name,
+                    metadata={"description": "Document embeddings for RAG"}
+                )
+            self._collection = VectorStore._collections[cache_key]
+        return self._collection
 
     def add_chunks(self, chunks: List[Chunk], embeddings: List[List[float]]) -> None:
         """Add chunks with embeddings to the vector store."""
@@ -74,18 +84,36 @@ class VectorStore:
     def search(
         self,
         query_embedding: List[float],
-        document_id: Optional[int] = None,
+        document_ids: Optional[List[int]] = None,
         top_k: int = 5,
         min_score: float = 0.3
     ) -> List[SearchResult]:
-        """Search for similar chunks."""
+        """Search for similar chunks.
+
+        Args:
+            query_embedding: The query embedding vector
+            document_ids: Optional list of document IDs to filter by (NEW: supports multiple)
+            top_k: Number of results to return
+            min_score: Minimum similarity score
+        """
         collection = self.get_or_create_collection()
 
-        where = {"document_id": document_id} if document_id else None
+        # 优化：支持多文档一次查询
+        where: Optional[Dict[str, Any]] = None
+        n_results = top_k
+
+        if document_ids:
+            if len(document_ids) == 1:
+                where = {"document_id": document_ids[0]}
+            else:
+                # ChromaDB 支持 $in 操作符进行多值过滤
+                where = {"document_id": {"$in": document_ids}}
+                # 多文档需要更多结果以保证召回
+                n_results = top_k * len(document_ids)
 
         results = collection.query(
             query_embeddings=[query_embedding],
-            n_results=top_k,
+            n_results=n_results,
             where=where,
             include=["documents", "metadatas", "distances"]
         )
@@ -109,6 +137,11 @@ class VectorStore:
                         score=score,
                         metadata=metadata
                     ))
+
+        # 如果是多文档搜索，按分数排序后截取 top_k
+        if document_ids and len(document_ids) > 1:
+            search_results.sort(key=lambda x: x.score, reverse=True)
+            search_results = search_results[:top_k]
 
         return search_results
 
